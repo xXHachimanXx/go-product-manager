@@ -2,26 +2,25 @@ package controller
 
 import (
 	"net/http"
-	"product-manager/model"
+	"product-manager/usecase"
 
 	"github.com/gin-gonic/gin"
 )
 
 type ProductController struct {
-	// Usecase
+	productUsecase usecase.ProductUsecase
 }
 
-func NewProductController() ProductController {
-	return ProductController{}
+func NewProductController(productUsecase usecase.ProductUsecase) ProductController {
+	return ProductController{
+		productUsecase: productUsecase,
+	}
 }
 
 func (p *ProductController) GetProducts(ctx *gin.Context) {
-	products := []model.Product{
-		{
-			ID:    1,
-			Name:  "batatinha",
-			Price: 20,
-		},
+	products, err := p.productUsecase.GetProductUseCase()
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, err)
 	}
 
 	ctx.JSON(http.StatusOK, products)
